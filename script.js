@@ -107,7 +107,7 @@ return points[name.charCodeAt(0) - 65];
 
 function getPointsDistance(x1, y1, x2, y2) {
 return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
-}
+} //Checkpoint, Kalkulasi jarak otomatis
 
 function drawTmpEdge() {
 ctx.strokeStyle = "#000";
@@ -153,7 +153,7 @@ edges.forEach(edge => {
     edge.cost,
     (edge.a.x + edge.b.x) / 2 + 5,
     (edge.a.y + edge.b.y) / 2 + 8
-    );
+    );//Checkpoint. ini enak jadi lokasi input nilai
 });
 
 points.forEach(point => {
@@ -219,7 +219,7 @@ points.forEach(point => (graph[point.name] = {}));
 edges.forEach(edge => {
     pointsName = edge.name.split("_");
 
-    graph[edge.a.name][edge.b.name] = edge.cost;
+    graph[edge.a.name][edge.b.name] = edge.cost;//Checkpoint, edge.cost is the main star of the show(Value cost)
     graph[edge.b.name][edge.a.name] = edge.cost;
 });
 }
@@ -344,7 +344,7 @@ edges.forEach(edge => {
     getPointsDistance(edge.a.x, edge.a.y, edge.b.x, edge.b.y),
     10
     );
-});
+});//Checkpoint, update cost 
 }
 
 function addNewEdge(pointA, pointB) {
@@ -399,7 +399,7 @@ state.cursor = 'grabbing';
 state.needUpdate = true;
 }
 
-function updateHoverPoint(state) {
+function updateHoverPoint(state) {//Checkpoint, ini otomatis update waktu SEDANG didrag
 let dist;
 let minDist = 10;
 points.forEach(point => {
@@ -563,25 +563,25 @@ if($icon.hasClass('fa-pause')) {
 
 function initialize() {  
 // Points
-initialPoints.forEach(pointPos => {
-    const pointData = {
-    name: String.fromCharCode(65 + points.length),
-    x: pointPos[0],
-    y: pointPos[1]
-    };
-    points.push(pointData);
-    createPointHtml(pointData);
-});
-$to.val(points[points.length - 1].name);
+// initialPoints.forEach(pointPos => {
+//     const pointData = {
+//     name: String.fromCharCode(65 + points.length),
+//     x: pointPos[0],
+//     y: pointPos[1]
+//     };
+//     points.push(pointData);
+//     createPointHtml(pointData);
+// });
+// $to.val(points[points.length - 1].name);
 
-// Edges
-let pointA;
-let pointB;
-initialEdges.forEach((edgeName) => {
-    pointA = points[edgeName.charCodeAt(0) - 65];
-    pointB = points[edgeName.charCodeAt(2) - 65];
-    addNewEdge(pointA, pointB);
-});
+// // Edges
+// let pointA;
+// let pointB;
+// initialEdges.forEach((edgeName) => {
+//     pointA = points[edgeName.charCodeAt(0) - 65];
+//     pointB = points[edgeName.charCodeAt(2) - 65];
+//     addNewEdge(pointA, pointB);
+// });
 
 // Tools
 tools.forEach((tool, i) => tool.$html.on("click", () => selectTool(i)));
