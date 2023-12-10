@@ -43,10 +43,13 @@ return {
 });
 const $notification = $("#notification");
 const $btnRunAlgorithm = $("#btn_run_algorithm");
+const $btnaddCost = $("#btn_addCost");
 const $icon = $btnRunAlgorithm.find('.icon');
 const $wrapAnimationSpeed = $('#wrap_animationSpeed');
 const $animationSpeedText = $wrapAnimationSpeed.find('span');
 const $animationSpeedInput = $wrapAnimationSpeed.find('input');
+const $edgeFrom = $("#edgeFrom");
+const $edgeTo = $("#edgeTo");
 const $from = $("#from");
 const $to = $("#to");
 const dragPos = { x: 0, y: 0 };
@@ -90,7 +93,7 @@ function getEdge(aName, bName) {
         pointsName = edge.name.split("_");
         if (
         (edge.a.name === aName && edge.b.name === bName) ||
-        (edge.b.name === aName && edge.a.name === bName)
+        (edge.a.name === bName && edge.b.name === aName)
         ) {
         foundEdge = edge;
         return false;
@@ -156,6 +159,8 @@ edges.forEach(edge => {
     );//Checkpoint. ini enak jadi lokasi input nilai
 });
 
+
+
 points.forEach(point => {
     ctx.fillStyle = "#fff";
     const isProcessed = processedNodes.includes(point.name);
@@ -207,6 +212,14 @@ const lowestCostNode = knownNodes.reduce((acc, node) => {
 
 return lowestCostNode;
 }
+
+
+points.forEach(point => {
+    const $option = $(document.createElement("option"));
+    $option.html(point.name);
+    $edgeFrom.append($option.clone());
+    $edgeTo.append($option.clone());
+});
 
 function createDijkstraGraph() {
 graph = {};
@@ -324,6 +337,7 @@ if(runningTimeout) {
 }
 }
 
+
 function runDijkstra() {
 startName = $from.val();
 endName = $to.val();
@@ -339,34 +353,53 @@ calculateNode();
 }
 
 function updateEdgesCost() {
-edges.forEach(edge => {
-    edge.cost = parseInt(
-    getPointsDistance(edge.a.x, edge.a.y, edge.b.x, edge.b.y),
-    10
-    );
-});//Checkpoint, update cost 
+    edges.forEach(edge => {
+        const edgeCostInput = $(`#edgeCostInput-${edge.name}`);
+        edge.cost = parseInt(
+            edgeCostInput.val() 
+        );
+    });
 }
+
+function updateEdgeCostFromInput(edgeName) {
+    const edge = edges.find(edge => edge.name === edgeName);
+    if (edge) {
+        const edgeCostInput = $("#edgeCost");
+        edge.cost = parseInt(edgeCostInput.val(), 10);
+        updateCanvas();
+    }
+}
+//Test
 
 function addNewEdge(pointA, pointB) {
-if (pointA === pointB || getEdge(pointA.name, pointB.name) !== null) {
-    return;
-}
+        if (pointA === pointB || getEdge(pointA.name, pointB.name) !== null) {
+            return;
+        }
+    
+        const edgeName = `${pointA.name}_${pointB.name}`;
+        const edgeCostInput = $("#edgeCost");
+        const edgeCost = parseInt(edgeCostInput.val(), 10);
+        
+        
+        // Your existing code to create the edge
+        edges.push({
+            name: edgeName,
+            a: pointA,
+            b: pointB,
+            cost: edgeCost || null
+        });
 
-edges.push({
-    name: `${pointA.name}_${pointB.name}`,
-    a: pointA,
-    b: pointB,
-    cost: null
-});
-updateEdgesCost();
-}
 
+        updateCanvas();
+}
 function createPointHtml(point) {
 const $option = $(document.createElement("option"));
 $option.html(point.name);
 $option.val(point.name);
 $from.append($option.clone());
 $to.append($option.clone());
+$edgeFrom.append($option.clone());
+$edgeTo.append($option.clone());//Test
 }
 
 function addNewPoint(x, y) {
@@ -394,7 +427,7 @@ holdingPoint.x = holdingPoint.x + (evt.clientX - x);
 holdingPoint.y = holdingPoint.y + (evt.clientY - y);
 dragPos.x = evt.clientX;
 dragPos.y = evt.clientY;
-updateEdgesCost();
+// updateEdgesCost();
 state.cursor = 'grabbing';
 state.needUpdate = true;
 }
@@ -421,6 +454,8 @@ points.forEach(point => {
     }
 });
 }
+
+
 
 function onMouseMove(evt) {
 const state = {evt, needUpdate: false, cursor: null};
@@ -544,6 +579,16 @@ $animationSpeedText.html(`(${evt.currentTarget.value})`);
 animationSpeed = parseInt(evt.currentTarget.value, 10);
 }
 
+function onUpdateClick(){
+    if(!running){
+        const edgeFrom = $("#edgeFrom").val();
+        const edgeTo = $("#edgeTo").val();
+        updateEdgeCostFromInput(edgeFrom + "_" + edgeTo);
+        updateEdgeCostFromInput(edgeTo + "_" + edgeFrom);
+        return;
+    }
+}
+
 function onRunClick() {
 if(!running) {
     runAlgorithm();
@@ -589,6 +634,8 @@ selectTool(toolsNames.select);
 
 $btnRunAlgorithm.on('click', onRunClick);
 $animationSpeedInput.on('change', onAnimationSpeedChange);
+$btnaddCost.on('click', onUpdateClick);
+
 
 $(document)
     .on("mousemove", onMouseMove)
