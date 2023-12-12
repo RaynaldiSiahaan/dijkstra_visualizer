@@ -47,6 +47,7 @@ const $btnaddCost = $("#btn_addCost");
 const $icon = $btnRunAlgorithm.find('.icon');
 const $wrapAnimationSpeed = $('#wrap_animationSpeed');
 const $animationSpeedText = $wrapAnimationSpeed.find('span');
+const $shortestPathOutput = $("#shortestPathOutput");
 const $animationSpeedInput = $wrapAnimationSpeed.find('input');
 const $edgeFrom = $("#edgeFrom");
 const $edgeTo = $("#edgeTo");
@@ -258,6 +259,8 @@ const results = {
     distance: trackedCosts[endName],
     path: optimalPath
 };
+
+$shortestPathOutput.html(optimalPath.join(' > '));
 
 console.log(results);
 updateCanvas();
